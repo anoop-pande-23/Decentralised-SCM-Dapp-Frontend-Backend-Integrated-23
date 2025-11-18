@@ -1,51 +1,50 @@
-import axios from 'axios';
+import axios from "axios";
 
-const API_BASE_URL = 'http://localhost:5000';
+const API_BASE_URL = "http://localhost:5000";
 
 // Create axios instance with default config
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
 // Add token to requests if available
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
 
-// ✅ Updated to match backend (username instead of email)
+// ✅ Auth
 export const registerUser = async (data: { username: string; password: string; role?: string }) => {
   try {
-    const response = await api.post('/register', data);
+    const response = await api.post("/register", data);
     return response.data;
   } catch (error: any) {
-    throw error.response?.data?.message || 'Registration failed';
+    throw error.response?.data?.message || "Registration failed";
   }
 };
 
-// ✅ Updated to use username (backend expects username, not email)
 export const loginUser = async (data: { username: string; password: string }) => {
   try {
-    const response = await api.post('/login', data);
+    const response = await api.post("/login", data);
     return response.data;
   } catch (error: any) {
-    throw error.response?.data?.message || 'Login failed';
+    throw error.response?.data?.message || "Login failed";
   }
 };
 
 // Product APIs
 export const getAllProducts = async () => {
   try {
-    const response = await api.get('/products');
+    const response = await api.get("/products");
     return response.data;
   } catch (error: any) {
-    throw error.response?.data?.message || 'Failed to fetch products';
+    throw error.response?.data?.message || "Failed to fetch products";
   }
 };
 
@@ -54,7 +53,7 @@ export const getProductById = async (id: string) => {
     const response = await api.get(`/products/${id}`);
     return response.data;
   } catch (error: any) {
-    throw error.response?.data?.message || 'Failed to fetch product';
+    throw error.response?.data?.message || "Failed to fetch product";
   }
 };
 
@@ -63,14 +62,12 @@ export const addProduct = async (data: { name: string; price: number; quantity: 
   return response.data;
 };
 
-
-
 export const updateProduct = async (id: string, data: { name: string; price: number; quantity: number }) => {
   try {
     const response = await api.put(`/products/${id}`, data);
     return response.data;
   } catch (error: any) {
-    throw error.response?.data?.message || 'Failed to update product';
+    throw error.response?.data?.message || "Failed to update product";
   }
 };
 
@@ -79,11 +76,11 @@ export const deleteProduct = async (id: string) => {
     const response = await api.delete(`/products/${id}`);
     return response.data;
   } catch (error: any) {
-    throw error.response?.data?.message || 'Failed to delete product';
+    throw error.response?.data?.message || "Failed to delete product";
   }
 };
 
-// ✅ Vendor Buy Requests
+// Vendor Buy Requests
 export const getVendorBuyRequests = async () => {
   try {
     const res = await api.get("/buy-requests/vendor");
@@ -102,7 +99,7 @@ export const approveBuyRequest = async (id: string, action: "Approved" | "Reject
   }
 };
 
-// ✅ Fetch all requests for current customer
+// Customer Buy Requests
 export const getCustomerBuyRequests = async () => {
   try {
     const res = await api.get("/buy-requests/customer");
@@ -112,7 +109,7 @@ export const getCustomerBuyRequests = async () => {
   }
 };
 
-// ✅ Verify uploaded receipt hash
+// Verify uploaded receipt hash (existing)
 export const verifyReceiptHash = async (productId: string, uploadedHash: string) => {
   try {
     const res = await api.post("/buy-requests/validate", { productId, uploadedHash });
@@ -122,7 +119,7 @@ export const verifyReceiptHash = async (productId: string, uploadedHash: string)
   }
 };
 
-// ✅ Verify uploaded receipt file (new feature)
+// Verify uploaded receipt file (new feature)
 export const verifyReceiptFile = async (productId: string | number, file: File) => {
   try {
     const formData = new FormData();
@@ -143,6 +140,56 @@ export const verifyReceiptFile = async (productId: string | number, file: File) 
   }
 };
 
+// Apply
+export const applyToBuyProduct = async (productId: number | string) => {
+  try {
+    const res = await api.post("/buy-requests/apply", { productId });
+    return res.data;
+  } catch (err: any) {
+    throw err.response?.data?.message || "Failed to apply for product";
+  }
+};
 
+// Update product status (existing)
+export const updateProductStatus = async (id: number | string, status: string) => {
+  try {
+    const response = await api.put(`/products/${id}/status`, { status });
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data?.message || "Failed to update status";
+  }
+};
+
+// ==================== QR APIs (NEW) ====================
+
+// Get QR by buyRequest id
+export const getReceiptQR = async (requestId: string | number) => {
+  try {
+    const res = await api.get(`/buy-requests/${requestId}/qr`);
+    return res.data;
+  } catch (err: any) {
+    throw err.response?.data?.message || "Failed to fetch QR code";
+  }
+};
+
+// Get QR by product id (uses vendor's latest approved request)
+export const getReceiptQRByProduct = async (productId: string | number) => {
+  try {
+    const res = await api.get(`/buy-requests/product/${productId}/qr`);
+    return res.data;
+  } catch (err: any) {
+    throw err.response?.data?.message || "Failed to fetch QR code by product";
+  }
+};
+
+// Verify QR payload (customer pastes decoded QR JSON)
+export const verifyQR = async (payload: { productId: number; receiptHash: string }) => {
+  try {
+    const res = await api.post("/buy-requests/verify-qr", payload);
+    return res.data;
+  } catch (err: any) {
+    throw err.response?.data?.message || "QR verification failed";
+  }
+};
 
 export default api;

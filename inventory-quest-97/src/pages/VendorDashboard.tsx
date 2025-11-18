@@ -3,19 +3,27 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Navbar from "@/components/Navbar";
 import { toast } from "sonner";
-import { CheckCircle, XCircle, Download, RefreshCw, ShoppingCart } from "lucide-react";
+import {
+  CheckCircle,
+  XCircle,
+  Download,
+  RefreshCw,
+  ShoppingCart,
+} from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import api from "@/api/api"; // ✅ your configured axios instance (frontend/api/api.ts)
+import api from "@/api/api";
 
 interface BuyRequest {
   _id: string;
-  productId: number;
-  customerId: string;
+  productId: { _id: string; name: string } | string;
+  customerId: { _id: string; username: string } | string;
   vendorId: string;
   status: string;
   receiptUrl?: string;
   createdAt: string;
+  productName?: string;
+  customerName?: string;
 }
 
 const VendorDashboard = () => {
@@ -24,14 +32,24 @@ const VendorDashboard = () => {
   const { token, role } = useAuth();
   const navigate = useNavigate();
 
-  // ✅ Fetch all buy requests for this vendor
   const fetchRequests = async () => {
     try {
       setLoading(true);
       const res = await api.get("/buy-requests/vendor", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setRequests(res.data);
+
+      const formatted = res.data.map((req: BuyRequest) => ({
+        ...req,
+        productName:
+          typeof req.productId === "object" ? req.productId.name : `#${req.productId}`,
+        customerName:
+          typeof req.customerId === "object"
+            ? req.customerId.username
+            : req.customerId,
+      }));
+
+      setRequests(formatted);
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "Failed to fetch requests");
     } finally {
@@ -44,7 +62,6 @@ const VendorDashboard = () => {
     fetchRequests();
   }, []);
 
-  // ✅ Approve or Reject request
   const handleAction = async (id: string, action: "Approved" | "Rejected") => {
     try {
       await api.put(
@@ -79,19 +96,23 @@ const VendorDashboard = () => {
             <ShoppingCart className="h-8 w-8 text-primary" />
           </div>
           <h1 className="text-3xl font-bold">Vendor Dashboard</h1>
-          <p className="mt-2 text-muted-foreground">Manage incoming product purchase requests</p>
+          <p className="mt-2 text-muted-foreground">
+            Manage incoming product purchase requests
+          </p>
         </div>
 
         {requests.length === 0 ? (
-          <Card className="glass-card p-12 text-center">
+          <Card className="p-12 text-center">
             <p className="text-muted-foreground text-lg">No requests yet</p>
           </Card>
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {requests.map((req) => (
-              <Card key={req._id} className="glass-card p-6 space-y-3">
+              <Card key={req._id} className="p-6 space-y-3">
                 <div className="flex justify-between items-center">
-                  <h3 className="font-semibold text-lg">Product #{req.productId}</h3>
+                  <h3 className="font-semibold text-lg">
+                    {req.productName || "Unnamed Product"}
+                  </h3>
                   <span
                     className={`px-3 py-1 text-sm rounded-full ${
                       req.status === "Approved"
@@ -105,9 +126,11 @@ const VendorDashboard = () => {
                   </span>
                 </div>
 
-                <p className="text-sm text-muted-foreground">Request ID: {req._id}</p>
                 <p className="text-sm text-muted-foreground">
-                  Customer: <span className="font-medium">{req.customerId}</span>
+                  Buyer: <span className="font-medium">{req.customerName}</span>
+                </p>
+                <p className="text-xs text-gray-500 mt-1">
+                  Requested: {new Date(req.createdAt).toLocaleString()}
                 </p>
 
                 {req.status === "Pending" && (
@@ -134,7 +157,10 @@ const VendorDashboard = () => {
                       variant="outline"
                       className="w-full gap-2"
                       onClick={() =>
-                        window.open(`http://localhost:5000${req.receiptUrl}`, "_blank")
+                        window.open(
+                          `http://localhost:5000${req.receiptUrl}`,
+                          "_blank"
+                        )
                       }
                     >
                       <Download className="h-4 w-4" /> Download Receipt

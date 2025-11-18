@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getProductById } from "@/api/api";
+import { getProductById, updateProductStatus } from "@/api/api";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Navbar from "@/components/Navbar";
 import { toast } from "sonner";
+
 import {
   ArrowLeft,
   Package,
@@ -17,24 +18,28 @@ import {
 
 const ProductDetails = () => {
   const [product, setProduct] = useState<any>(null);
+  const [status, setStatus] = useState<string>("Created");
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { role } = useAuth();
-  const isVendor = role === "vendor";
+  const isVendor = role === "vendor" || role === "admin";
 
   useEffect(() => {
     const fetchProduct = async () => {
       if (!id) return;
       try {
         const data = await getProductById(id);
-        setProduct({
+        const formatted = {
           id: Number(data.id),
           name: data.name,
           price: Number(data.price),
           quantity: Number(data.quantity),
           vendorId: data.vendorId || null,
-        });
+          status: data.status || "Created",
+        };
+        setProduct(formatted);
+        setStatus(formatted.status);
       } catch (error: any) {
         console.error("❌ Fetch error:", error);
         toast.error(error || "Failed to fetch product");
@@ -116,9 +121,7 @@ const ProductDetails = () => {
                       <p className="text-sm text-muted-foreground">Quantity</p>
                       <p
                         className={`text-2xl font-bold ${
-                          product.quantity > 10
-                            ? "text-green-500"
-                            : "text-orange-500"
+                          product.quantity > 10 ? "text-green-500" : "text-orange-500"
                         }`}
                       >
                         {product.quantity} units
@@ -132,21 +135,23 @@ const ProductDetails = () => {
                     <h3 className="mb-2 font-semibold">Product Information</h3>
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">Status</span>
+                        <span className="text-muted-foreground">Stock</span>
                         <span
                           className={`font-medium ${
-                            product.quantity > 0
-                              ? "text-green-500"
-                              : "text-red-500"
+                            product.quantity > 0 ? "text-green-500" : "text-red-500"
                           }`}
                         >
                           {product.quantity > 0 ? "In Stock" : "Out of Stock"}
                         </span>
                       </div>
+
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">
-                          Total Value
-                        </span>
+                        <span className="text-muted-foreground">Supply Chain</span>
+                        <span className="font-medium">{status}</span>
+                      </div>
+
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Total Value</span>
                         <span className="font-medium">
                           ₹{(product.price * product.quantity).toFixed(2)}
                         </span>
@@ -155,15 +160,67 @@ const ProductDetails = () => {
                   </div>
 
                   {isVendor && (
-                    <Button
-                      onClick={() =>
-                        navigate(`/update-product/${product.id}`)
-                      }
-                      className="w-full gap-2"
-                    >
-                      <Edit className="h-4 w-4" />
-                      Edit Product
-                    </Button>
+                    <>
+                      <Button
+                        onClick={() => navigate(`/update-product/${product.id}`)}
+                        className="w-full gap-2"
+                      >
+                        <Edit className="h-4 w-4" />
+                        Edit Product
+                      </Button>
+
+                      {/* STATUS SECTION */}
+                      <div className="rounded-lg bg-secondary p-4">
+                        <h3 className="mb-2 font-semibold">Update Status</h3>
+
+                        <select
+                          value={status}
+                          onChange={(e) => setStatus(e.target.value)}
+                          className="border p-2 rounded w-full"
+                        >
+                          <option value="Created">Created</option>
+                          <option value="Packed">Packed</option>
+                          <option value="Shipped">Shipped</option>
+                          <option value="Delivered">Delivered</option>
+                        </select>
+
+                        <Button
+                          onClick={async () => {
+                            try {
+                              await updateProductStatus(product.id, status);
+                              toast.success("Status updated");
+                            } catch {
+                              toast.error("Failed to update status");
+                            }
+                          }}
+                          className="mt-3 w-full"
+                        >
+                          Update Status
+                        </Button>
+
+                        {/* Generate QR for latest approved BuyRequest for this product */}
+                        <Button
+                          onClick={() => navigate(`/qr/product/${product.id}`)}
+                          className="mt-3 w-full bg-green-600 hover:bg-green-700"
+                        >
+                          Generate QR Code
+                        </Button>
+                      </div>
+                    </>
+                  )}
+
+                  {/* Customer actions */}
+                  {!isVendor && (
+                    <div className="rounded-lg bg-secondary p-4">
+                      <h3 className="mb-2 font-semibold">Customer Actions</h3>
+
+                      <Button
+                        onClick={() => navigate(`/verify/${product.id}`)}
+                        className="w-full"
+                      >
+                        Verify Receipt / QR
+                      </Button>
+                    </div>
                   )}
                 </div>
               </div>
