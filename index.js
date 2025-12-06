@@ -36,7 +36,7 @@ app.post("/login", login);
 
 // ==================== PRODUCTS ====================
 
-// 📦 Get all products
+//  Get all products
 app.get("/products", async (req, res) => {
   try {
     const allProducts = await contractInstance.getAllProducts();
@@ -57,12 +57,12 @@ app.get("/products", async (req, res) => {
 
     res.json(products);
   } catch (err) {
-    console.error("❌ Error fetching products:", err);
+    console.error(" Error fetching products:", err);
     res.status(500).json({ message: "Failed to fetch products" });
   }
 });
 
-// 📦 Get single product
+//  Get single product
 app.get("/products/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -83,12 +83,12 @@ app.get("/products/:id", async (req, res) => {
       status: dbEntry ? dbEntry.status : "Created",
     });
   } catch (err) {
-    console.error("❌ Error fetching product:", err.message);
+    console.error(" Error fetching product:", err.message);
     res.status(500).json({ message: "Failed to fetch product details" });
   }
 });
 
-// 🏗️ Add new product
+//  Add new product
 app.post("/products", auth, authorizeRole("vendor", "admin"), async (req, res) => {
   try {
     const { name, price, quantity } = req.body;
@@ -129,12 +129,12 @@ app.post("/products", auth, authorizeRole("vendor", "admin"), async (req, res) =
       blockchainId: nextId,
     });
   } catch (err) {
-    console.error("❌ Error adding product:", err);
+    console.error(" Error adding product:", err);
     res.status(500).json({ message: "Failed to add product" });
   }
 });
 
-// 🛠️ Update product
+//  Update product
 app.put("/products/:id", auth, authorizeRole("vendor", "admin"), async (req, res) => {
   try {
     const { name, price, quantity } = req.body;
@@ -154,12 +154,12 @@ app.put("/products/:id", auth, authorizeRole("vendor", "admin"), async (req, res
 
     res.json({ success: true, message: "Product updated" });
   } catch (err) {
-    console.error("❌ Error:", err);
+    console.error(" Error:", err);
     res.status(500).json({ message: "Failed to update product" });
   }
 });
 
-// 🗑️ Delete
+//  Delete
 app.delete("/products/:id", auth, authorizeRole("admin"), async (req, res) => {
   try {
     const id = Number(req.params.id);
@@ -170,12 +170,12 @@ app.delete("/products/:id", auth, authorizeRole("admin"), async (req, res) => {
 
     res.json({ success: true, message: "Product deleted" });
   } catch (err) {
-    console.error("❌ Error:", err);
+    console.error(" Error:", err);
     res.status(500).json({ message: "Failed to delete product" });
   }
 });
 
-// ⭐ FINAL CLEAN VERSION — supply chain status
+//  FINAL CLEAN VERSION — supply chain status
 app.put(
   "/products/:id/status",
   auth,
@@ -205,7 +205,7 @@ app.put(
         product: updated,
       });
     } catch (err) {
-      console.error("❌ Error updating status:", err);
+      console.error(" Error updating status:", err);
       res.status(500).json({ message: "Failed to update status" });
     }
   }

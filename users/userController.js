@@ -6,7 +6,7 @@ require("dotenv").config();
 // Register new user
 async function register(req, res) {
   try {
-    const { username, password, role } = req.body; // ✅ role added
+    const { username, password, role } = req.body; // role added
 
     if (!username || !password)
       return res.status(400).json({ message: "Username and password required" });
@@ -16,7 +16,7 @@ async function register(req, res) {
     if (existingUser)
       return res.status(400).json({ message: "Username already exists" });
 
-    // ✅ Default role if not provided (e.g., 'customer')
+    //  Default role if not provided (e.g., 'customer')
     const newUser = new User({ username, password, role: role || "customer" });
     await newUser.save();
 
@@ -39,7 +39,7 @@ async function login(req, res) {
     const isMatch = await user.comparePassword(password);
     if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
 
-    // ✅ Include role in JWT payload
+    //  Include role in JWT payload
     const token = jwt.sign(
       {
         id: user._id,
