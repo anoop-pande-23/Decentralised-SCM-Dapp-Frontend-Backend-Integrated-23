@@ -1,65 +1,62 @@
-PrdoctHun- A Decentralized Supply Chain Management System Dapp.
-A Hybrid On-Chain + Off-Chain Anti-Counterfeit Verification Platform
+# ProductHub – Decentralized Supply Chain Management System (DApp)
+## A Hybrid On-Chain + Off-Chain Anti-Counterfeit Verification Platform
 
-This project implements a Blockchain-powered Supply Chain Management System with features like:
+ProductHub is a Blockchain-powered Supply Chain Management System designed to eliminate counterfeit products, ensure transparency, and create tamper-proof verification using a combination of:
 
-✅ On-chain Product Registry
-✅ Anti-Counterfeit PDF Receipt Verification
-✅ QR-based Authenticity Check
-✅ Vendor-Customer Workflow
-✅ Off-chain Supply Chain Tracking
-✅ Dual Validation System (File Hash + QR Hash)
+✔ Ethereum Smart Contracts
 
-1. 📝 Introduction
+✔ Node.js Backend (Workflow + Validation Logic)
 
-Traditional supply chains face several issues:
+✔ MongoDB (Off-chain metadata)
 
-Counterfeit / fake products
+✔ React Frontend (Vendor + Customer UI)
 
-Lack of transparency
+✔ QR-based verification + SHA-256 Hashing
 
-Tampering in centralized databases
+## 1. Introduction
 
-Manual verification
+Traditional supply chains suffer from:
 
-No audit trail
+* Counterfeit / fake products
 
-Blockchain provides:
+* Tampered centralized databases
+
+* No end-to-end auditability
+
+* Manual + error-prone verification
+
+* Zero trust between vendor ↔ customer
+
+Blockchain solves this by offering:
 
 ✔ Immutability
+
 ✔ Transparency
+
 ✔ Decentralized trust
-✔ Full traceability
 
-This project solves these challenges using:
+✔ End-to-end traceability
 
-Smart Contracts for integrity
+ProductHub brings all of this together using a hybrid architecture:
+Smart Contracts secure critical data, while the backend + MongoDB handle efficient, gas-free business workflows.
 
-Backend logic for workflows & validation
-
-MongoDB for fast off-chain metadata
-
-QR codes + SHA-256 for counterfeit protection
-
-React UI for vendor & customer dashboards
-
-2. 🏗 System Architecture
+## 2. System Architecture
 Four-Layer Hybrid Architecture
-Frontend (React + TS)
-        ↓
+Frontend (React + TypeScript)
+            ↓
 Backend API (Node.js + Express)
-        ↓
+            ↓
 Blockchain Layer (Solidity Smart Contract)
-        ↓
-MongoDB (Off-chain metadata)
+            ↓
+MongoDB (Off-chain metadata + workflow)
 
-Why Hybrid?
-
-Blockchain → Immutability for critical data
-
-MongoDB → Fast, gas-free updates for product status & ownership
-
-3. 🛠 Tech Stack
+### Why Hybrid?
+Module	Storage	Reason
+Product Master	Blockchain	Immutable & critical
+Receipt Hash	Blockchain	Anti-counterfeit security
+Supply Chain Status	MongoDB	Fast & frequent updates
+Vendor Ownership	MongoDB	Avoids gas, keeps logic simple
+## 3. Tech Stack
 Blockchain
 
 Solidity
@@ -70,19 +67,17 @@ Ethers.js
 
 Backend
 
-Node.js
-
-Express
+Node.js + Express
 
 JWT Authentication
 
 Multer (file upload)
 
-PDFKit (receipt creation)
+PDFKit (receipt generation)
 
 Crypto (SHA-256 hashing)
 
-QRCode Generator
+QRCode generator
 
 MongoDB + Mongoose
 
@@ -96,8 +91,8 @@ Axios
 
 shadcn/ui
 
-4. 🔐 Smart Contract Overview (contractApi.sol)
-Stores on-chain:
+## 4. Smart Contract Overview (contractApi.sol)
+On-chain Storage Includes
 
 Product details
 
@@ -105,16 +100,16 @@ Receipt SHA-256 hash
 
 Immutable audit logs
 
-Key On-Chain Functions
+Key Smart Contract Functions
 Function	Purpose
 setProduct()	Add product
-updateProduct()	Modify product
+updateProduct()	Update product
 deleteProduct()	Delete product
-getProduct()	Read product
-getAllProducts()	List all products
-storeDocumentHash()	Save receipt hash
-verifyDocumentHash()	Compare receipt hash
-Smart Contract Events (Blockchain Audit Logs):
+getProduct()	Fetch 1 product
+getAllProducts()	Fetch all
+storeDocumentHash()	Store receipt hash
+verifyDocumentHash()	Validate hash
+Smart Contract Events (Audit Logs)
 
 ProductAdded
 
@@ -124,32 +119,33 @@ ProductDeleted
 
 DocumentHashStored
 
-Events help maintain an immutable audit trail for faculty or auditors.
+Events create a blockchain-level security trail.
 
-5. 🖥 Backend Architecture
-Responsibilities:
+## 5. Backend Architecture
 
-Vendor/Customer Authentication (JWT)
+Backend acts as the brain of the system.
 
-Role-based middleware
+Responsibilities
 
-Interacts with Ethereum blockchain
+Authenticate users with JWT
 
-Generates signed PDF receipts
+Vendor/Customer role-based access
 
-Computes SHA-256 hash
+Interact with Ethereum blockchain
 
-Stores PDF path & hash
+Generate signed PDF receipts
 
-Generates QR Code
+SHA-256 hashing
 
-Validates QR or receipt file
+QR Code creation
 
-Off-chain supply chain status update
+File verification (PDF/Image)
 
-Buy request workflow
+Off-chain supply chain tracking
 
-6. 🗄 Database Schema (MongoDB)
+Buy request workflow automation
+
+## 6. Database Schema (MongoDB)
 Product Schema
 {
   blockchainId: Number,
@@ -170,27 +166,27 @@ BuyRequest Schema
   receiptUrl: String
 }
 
-7. ⭐ Major Features
-Feature 1 — On-chain Product Management
+## 7.  Major Features
+### Feature 1 — On-Chain Product Management
 
-Add / Update / Delete product on blockchain
+Add / Update / Delete product
 
-Data is immutable and verified
+All stored directly on blockchain
 
-Feature 1.5 — Off-chain Supply Chain Tracking
+Immutable + trustless
 
-Statuses:
+### Feature 1.5 — Off-Chain Supply Chain Tracking
+
+Product status journey:
 
 Created → Packed → Shipped → Delivered
 
+Stored off-chain → cheaper, faster, scalable.
 
-Stored off-chain to reduce gas cost.
+### Feature 2 — Anti-Counterfeit Receipt Verification (Core Feature)
+Workflow
 
-Feature 2 — Anti-Counterfeit Receipt Verification
-
-Workflow:
-
-Vendor approves request
+Vendor approves buy request
 
 Backend generates PDF receipt
 
@@ -198,52 +194,56 @@ PDF → SHA-256 hash
 
 Hash stored on blockchain
 
-Customer verifies by:
+QR generated for customer
 
-Uploading receipt file
+Customer verifies using:
 
-Scanning/pasting QR
+✔ File Upload OR
 
-Dual Verification:
-🔒 On-chain Hash Check
-🔍 Off-chain File Hash Check
+✔ QR Scan
 
-Feature 3 — Buy Request Workflow
+Dual Verification
 
-Customer applies → Auto-detect vendor
+🔒 Blockchain hash check
+
+🔍 Local computed hash check
+
+Impossible to forge.
+
+### Feature 3 — Buy Request Workflow
+
+Customer applies
+
+Vendor auto-mapped
 
 Vendor approves/rejects
 
-Approved = receipt auto-generated
+Receipt auto-generated on approval
 
-Hash stored on blockchain
+### Feature 4 — Vendor Access Control
 
-Feature 4 — Vendor Access Control
-
-Vendor can ONLY update his products using:
+Vendor can only modify their own products, enforced using:
 
 auth.js
 
 authorizeRole.js
 
-8. 🔄 Project Workflow (End-to-End)
-Vendor Flow
+## 8.  End-to-End Workflow
+Vendor
 
 Login
 
 Add product
 
-Update supply chain status
+Update status
 
-View customer requests
+Approve buy request
 
-Approve → Receipt generated
+PDF generated → hash stored
 
-Hash stored on smart contract
+Show customer QR
 
-Generate QR for customer
-
-Customer Flow
+Customer
 
 Login
 
@@ -251,86 +251,102 @@ View products
 
 Apply to buy
 
-Receive approval + receipt
+Download receipt
 
-Verify product authenticity using:
+Verify authenticity via:
 
-✔ Receipt Upload
-✔ QR Scan
+File Upload
 
-9. ⚙ Environment Setup
+QR Scan (JSON payload)
 
-Create .env file:
-
-MONGO_URI=mongodb://127.0.0.1:27017/supplychain
-API_URL=http://127.0.0.1:8545
-PRIVATE_KEY=<hardhat-account-private-key>
+## 9. Environment Setup (.env example)
+MONGO_URI=<your-mongo-url>
+API_URL=<your-api-url>
+PRIVATE_KEY=<hardhat-private-key>
 CONTRACT_ADDRESS=<after-deploy>
-JWT_SECRET=anysecret
+JWT_SECRET=yourSecret
 JWT_EXPIRES_IN=1h
 
-10. ▶ How to Run the Project
-1. Clone Repo
-git clone <repo-url>
-
-2. Install Backend Dependencies
+## 10. Running the Project
+### Backend
 cd backend
 npm install
-
-3. Start MongoDB
 mongod
-
-4. Start Hardhat Local Blockchain
 npx hardhat node
-
-5. Deploy Contract
 npx hardhat run scripts/deploy.js --network localhost
-
-
-Copy the contract address → add to .env.
-
-6. Run Backend
 node index.js
 
-
-Backend → http://localhost:5000
-
-7. Run Frontend
+### Frontend
 cd frontend
 npm install
 npm run dev
 
+## 11. API Endpoints Summary
+Auth
+Method	Endpoint
+POST	/register
+POST	/login
+Products
 
-Frontend → http://localhost:8081
+GET /products
+GET /products/:id
+POST /products
+PUT /products/:id
+PUT /products/:id/status
+DELETE /products/:id
 
-11. 📡 API Endpoints Summary
-🔐 Auth
-Method	Endpoint	Role
-POST	/register	All
-POST	/login	All
-📦 Products
-Method	Endpoint
-GET	/products
-GET	/products/:id
-POST	/products
-PUT	/products/:id
-DELETE	/products/:id
-PUT	/products/:id/status
-🛒 Buy Requests
-Method	Endpoint
-POST	/buy-requests/apply
-GET	/buy-requests/vendor
-GET	/buy-requests/customer
-PUT	/buy-requests/:id/approve
-🔐 Verification
-Method	Endpoint
-POST	/buy-requests/validate-file
-POST	/buy-requests/verify-qr
-GET	/buy-requests/:id/qr
-12. 🔒 Security Model
+Buy Requests
+
+POST /buy-requests/apply
+GET /buy-requests/vendor
+GET /buy-requests/customer
+PUT /buy-requests/:id/approve
+
+Verification
+
+POST /buy-requests/validate-file
+POST /buy-requests/verify-qr
+GET /buy-requests/:id/qr
+
+## 12. Security Model
+
 ✔ JWT Authentication
-✔ Role-based Access Control
-✔ Hash-based Verification
+✔ Role-Based Access Control
 ✔ Blockchain Immutability
+✔ Hash-Based Verification
 ✔ QR Code Integrity
-✔ No tampering possible once hash is stored
+✔ Tamper-proof receipts
+
+## 13. Key Advantages
+
+* Zero counterfeit receipts
+
+* Fully auditable supply chain
+
+* Hybrid architecture = cost-efficient
+
+* Transparent vendor-customer workflow
+
+* Quick validation via QR or file upload
+
+## 14. Future Enhancements
+
+MetaMask login
+Deploy on Testnet (Polygon / Sepolia)
+IPFS storage for receipts
+Real-time shipment tracking
+AI anomaly detection
+
+## 15. Conclusion
+
+ProductHub delivers:
+
+End-to-end product traceability
+
+Strong anti-counterfeit mechanism
+
+Hybrid blockchain-backed architecture
+
+Tamper-proof receipts + QR verification
+
+A production-ready, scalable SCM solution
