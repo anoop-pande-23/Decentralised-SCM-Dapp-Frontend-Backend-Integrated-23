@@ -204,9 +204,9 @@ Customer verifies using:
 
 Dual Verification
 
-🔒 Blockchain hash check
+Blockchain hash check
 
-🔍 Local computed hash check
+Local computed hash check
 
 Impossible to forge.
 
