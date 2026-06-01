@@ -1,3 +1,22 @@
+<div align="center">
+
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:0FAAFF,100:6DB33F&height=180&section=header&text=ProductHub&fontSize=60&fontColor=ffffff&fontAlignY=38&desc=Decentralised%20Supply%20Chain%20Management%20DApp&descSize=18&descAlignY=58&animation=fadeIn" width="100%"/>
+
+<br/>
+
+![Solidity](https://img.shields.io/badge/Solidity-363636?style=for-the-badge&logo=solidity&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
+![Hardhat](https://img.shields.io/badge/Hardhat-FFF100?style=for-the-badge&logo=hardhat&logoColor=black)
+![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white)
+
+*Transparent, immutable, and tamper-proof supply chain management on the blockchain.*
+
+</div>
+
+---
+
 # ProductHub – Decentralized Supply Chain Management System (DApp)
 ## A Hybrid On-Chain + Off-Chain Anti-Counterfeit Verification Platform
 
@@ -350,3 +369,13 @@ Hybrid blockchain-backed architecture
 Tamper-proof receipts + QR verification
 
 A production-ready, scalable SCM solution
+
+---
+
+<div align="center">
+
+*Built by [Anoop Pande](https://linkedin.com/in/anoop-pande-001906236)*
+
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:6DB33F,100:0FAAFF&height=120&section=footer" width="100%"/>
+
+</div>
